@@ -20,16 +20,7 @@
 #endif
 
 //CheckError
-inline bool CheckError(cl_int err, char *msg)
-{
-    if(err != CL_SUCCESS)
-    {
-        fprintf(stderr, "%s\n", msg);
-        exit(1);
-    }
-    else
-        return true;
-}
+bool CheckError(cl_int err, char *msg = NULL);
 
 //Select platform manually
 cl_platform_id SelectPlatform();
