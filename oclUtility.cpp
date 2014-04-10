@@ -33,6 +33,7 @@
 
 #include "oclUtility.h"
 #include <sys/stat.h>
+#include <string.h>
 
 #ifdef __APPLE__
 #include <OpenCL/OpenCL.h>
@@ -311,10 +312,10 @@ char* LoadProgramSourceCode(char *filename, size_t *source_size)
 	char *source = (char*)malloc(sizeof(char)*(filestate.st_size+1));
 	memset(source, 0, sizeof(char)*(filestate.st_size+1));
 
-	if(source_size!=NULL)
-		*source_size = fread(source,filestate.st_size, 1, fp);
-	else
-		fread(source,filestate.st_size, 1, fp);
+	fread(source,filestate.st_size, 1, fp);
+	
+	if(NULL != source_size)
+		*source_size = strlen(source);
 	
 	fclose(fp);
 
