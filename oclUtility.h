@@ -23,7 +23,7 @@
 bool CheckError(cl_int err, char *msg = NULL);
 
 //Select platform manually
-cl_platform_id SelectPlatform();
+cl_platform_id SelectPlatform(void);
 
 //Select devices manually
 cl_device_id SelectDevice(cl_platform_id);

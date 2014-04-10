@@ -7,13 +7,12 @@
 //
 
 #include "oclUtility.h"
+#include <sys/stat.h>
 
 #ifdef __APPLE__
 #include <OpenCL/OpenCL.h>
-#include <sys/stat.h>
 #else
-#include <CL\cl.h>
-#include <sys\stat.h>
+#include <CL/cl.h>
 #endif
 
 //Check Error
@@ -176,7 +175,7 @@ bool CheckError(cl_int err, char *msg)
 
 
 //Select platform manually
-cl_platform_id SelectPlatform()
+cl_platform_id SelectPlatform(void)
 {
     cl_int err = 0;
     char msg[256] = {0};
