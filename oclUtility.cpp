@@ -239,6 +239,8 @@ cl_platform_id SelectPlatform(void)
     while(choice<1 || choice>num_platforms)
     {
         fprintf(stderr, "Invalid choice!\n");
+	printf("Please select a valid platform number:");
+	scanf("%i", &choice);
     }
     
     err = clGetPlatformInfo(platforms[choice-1], CL_PLATFORM_NAME, sizeof(msg), msg, NULL);
@@ -286,6 +288,8 @@ cl_device_id SelectDevice(cl_platform_id platform)
     while (choice<0 || choice>num_devices)
     {
         fprintf(stderr, "Invalid choice!\n");
+	printf("Please select a valid device number:");
+	scanf("%i", &choice);
     }
     
     err = clGetDeviceInfo(devices[choice-1], CL_DEVICE_NAME, sizeof(msg), msg, NULL);
