@@ -42,7 +42,7 @@
 #endif
 
 //Check Error
-bool CheckError(cl_int err, char *msg)
+bool CheckError(cl_int err, char *msg, bool abort)
 {
 	if(CL_SUCCESS != err)
 	{
@@ -192,6 +192,12 @@ bool CheckError(cl_int err, char *msg)
 		
 		if(NULL != msg)
 			fprintf(stderr, "%s\n", msg);
+
+		if (abort)
+		{
+			printf("Aborting...\n");
+			exit(1);
+		}
 		
 		return false;
 	}
@@ -239,6 +245,8 @@ cl_platform_id SelectPlatform(void)
     while(choice<1 || choice>num_platforms)
     {
         fprintf(stderr, "Invalid choice!\n");
+        printf("Please select a valid platform number:");
+        scanf("%i", &choice);
     }
     
     err = clGetPlatformInfo(platforms[choice-1], CL_PLATFORM_NAME, sizeof(msg), msg, NULL);
@@ -255,9 +263,16 @@ cl_device_id SelectDevice(cl_platform_id platform)
     cl_uint num_devices = 0;
     char msg[256] = {0};
     int choice = 0;
+
+	cl_device_id default_device = NULL;
+	err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_DEFAULT, 1, &default_device, NULL);
     
     err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
-    CheckError(err, "Failed to get any GPU device!");
+    if(!CheckError(err, "Failed to get any GPU device!", false))
+	{
+		printf("Using default device!\n");
+		return default_device;
+	}
     
     std::vector<cl_device_id> devices(num_devices);
     err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, num_devices, &devices[0], &num_devices);
@@ -286,6 +301,8 @@ cl_device_id SelectDevice(cl_platform_id platform)
     while (choice<0 || choice>num_devices)
     {
         fprintf(stderr, "Invalid choice!\n");
+        printf("Please select a valid device number:");
+        scanf("%i", &choice);
     }
     
     err = clGetDeviceInfo(devices[choice-1], CL_DEVICE_NAME, sizeof(msg), msg, NULL);
@@ -323,13 +340,107 @@ char* LoadProgramSourceCode(char *filename, size_t *source_size)
 }
 
 //Query device information
-void GetDeviceInfo(cl_device_id device, char *msg)
+void QueryDeviceInfo(cl_device_id device)
 {
-	/*char buffer[2048] = {0};
-	msg[0] = '\0';
+	char buffer[2048] = {0};
+	size_t code = 0;
+	size_t triple[3] = {0};
 	cl_int err = 0;
 
 	err = clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
 	CheckError(err);
-	strcat(msg, buffer);*/
+	printf("----------------------------------------------------\n");
+	printf("%s\n", buffer);
+	printf("----------------------------------------------------\n");
+
+	err = clGetDeviceInfo(device, CL_DEVICE_VENDOR, sizeof(buffer), buffer, NULL);
+	CheckError(err);
+	printf("Device vender:               %s\n", buffer);
+
+	err = clGetDeviceInfo(device, CL_DRIVER_VERSION, sizeof(buffer), buffer, NULL);
+	CheckError(err);
+	printf("Device driver version:       %s\n", buffer);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_VERSION, sizeof(buffer), buffer, NULL);
+	CheckError(err);
+	printf("Device version:              %s\n", buffer);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
+	CheckError(err);
+	printf("OpenCL C version:            %s\n", buffer);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_TYPE, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	switch (code)
+	{
+	case CL_DEVICE_TYPE_CPU:
+		printf("Device type:                 CPU\n");
+	break;
+	case CL_DEVICE_TYPE_GPU:
+		printf("Device type:                 GPU\n");
+	break;
+	case CL_DEVICE_TYPE_ACCELERATOR:
+		printf("Device type:                 Accelerator\n");
+	default:
+		break;
+	}
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Max compute unit:            %i\n", code);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Max work item dimensions:    %i\n", code);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(triple), triple, NULL);
+	CheckError(err);
+	printf("Max work item sizes:         %i / %i / %i\n", triple[0], triple[1], triple[2]);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Max work group size:         %i\n", code);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Max clock frequency:         %i MHz\n", code);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_ADDRESS_BITS, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Address bits:                %i\n", code);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Max memery allocation size:  %i MB\n", code / 1024 / 1024);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Global memery size:          %i MB\n", code / 1024 / 1024);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_ERROR_CORRECTION_SUPPORT, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	if (!code)
+		printf("Error correction support:    %s\n", "NO");
+	else
+		printf("Error correction support:    %s\n", "YES");
+
+	err = clGetDeviceInfo(device, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Local memery sizes:          %i KB\n", code / 1024);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Max const buffer size:       %i KB\n", code / 1024);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_IMAGE_SUPPORT, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Image support:               %i\n", code);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_READ_IMAGE_ARGS, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Max read image args:         %i\n", code);
+
+	err = clGetDeviceInfo(device, CL_DEVICE_MAX_WRITE_IMAGE_ARGS, sizeof(size_t), &code, NULL);
+	CheckError(err);
+	printf("Max write image args:        %i\n", code);
 }

@@ -45,7 +45,7 @@
 #endif
 
 //CheckError
-bool CheckError(cl_int err, char *msg = NULL);
+bool CheckError(cl_int err, char *msg = NULL, bool abort = true);
 
 //Select platform manually
 cl_platform_id SelectPlatform(void);
@@ -54,7 +54,7 @@ cl_platform_id SelectPlatform(void);
 cl_device_id SelectDevice(cl_platform_id);
 
 //Query device information
-void GetDeviceInfo(cl_device_id device, char *msg);
+void QueryDeviceInfo(cl_device_id device);
 
 //Load program source code
 char* LoadProgramSourceCode(char *filename, size_t *source_size = NULL);
