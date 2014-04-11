@@ -321,3 +321,15 @@ char* LoadProgramSourceCode(char *filename, size_t *source_size)
 
 	return source;
 }
+
+//Query device information
+void GetDeviceInfo(cl_device_id device, char *msg)
+{
+	/*char buffer[2048] = {0};
+	msg[0] = '\0';
+	cl_int err = 0;
+
+	err = clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
+	CheckError(err);
+	strcat(msg, buffer);*/
+}

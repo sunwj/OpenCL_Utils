@@ -31,8 +31,8 @@
 
 */
 
-#ifndef SelectPlatformandDevices_oclUtility_h
-#define SelectPlatformandDevices_oclUtility_h
+#ifndef oclUtility_h
+#define oclUtility_h
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,6 +52,9 @@ cl_platform_id SelectPlatform(void);
 
 //Select devices manually
 cl_device_id SelectDevice(cl_platform_id);
+
+//Query device information
+void GetDeviceInfo(cl_device_id device, char *msg);
 
 //Load program source code
 char* LoadProgramSourceCode(char *filename, size_t *source_size = NULL);
