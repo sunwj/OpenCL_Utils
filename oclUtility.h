@@ -59,4 +59,7 @@ void QueryDeviceInfo(cl_device_id device);
 //Load program source code
 char* LoadProgramSourceCode(char *filename, size_t *source_size = NULL);
 
+//Print build log
+void PrintBuildLog(cl_program *, cl_device_id);
+
 #endif
