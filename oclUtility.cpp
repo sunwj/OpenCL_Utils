@@ -34,6 +34,7 @@
 #include "oclUtility.h"
 #include <sys/stat.h>
 #include <string.h>
+#include <vector>
 
 #ifdef __APPLE__
 #include <OpenCL/OpenCL.h>
@@ -460,4 +461,30 @@ void PrintBuildLog(cl_program *program, cl_device_id device)
     fprintf(stderr, "Build log:\n%s\n", log);
     
     free(log);
+}
+
+//Found kernel function index by name
+int FoundKernelFunctionIndexByName(cl_program *program, char *name)
+{
+    if(name == NULL)
+        return -1;
+
+    cl_int err = 0;
+    cl_uint num_kernels = 0;
+
+    err = clCreateKernelsInProgram(*program, 0, NULL, &num_kernels);
+    CheckError(err);
+    std::vector<cl_kernel> kernel_list(num_kernels);
+    err = clCreateKernelsInProgram(*program, num_kernels, &kernel_list[0], NULL);
+
+    for(int i = 0; i < kernel_list.size(); ++i)
+    {
+        char func_name[64] = {0};
+        err = clGetKernelInfo(kernel_list[i], CL_KERNEL_FUNCTION_NAME, 64, func_name, NULL);
+        CheckError(err);
+        if(strcmp(name, func_name) == 0)
+            return i;
+    }
+
+    return -1;
 }

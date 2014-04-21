@@ -62,4 +62,7 @@ char* LoadProgramSourceCode(char *filename, size_t *source_size = NULL);
 //Print build log
 void PrintBuildLog(cl_program *, cl_device_id);
 
+//Found kernel function index by name
+int FoundKernelFunctionIndexByName(cl_program *, char *);
+
 #endif
