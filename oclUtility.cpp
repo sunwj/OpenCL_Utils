@@ -388,7 +388,7 @@ void QueryDeviceInfo(cl_device_id device)
 
 	err = clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(size_t), &code, NULL);
 	CheckError(err);
-	printf("Max compute unit:            %i\n", code);
+    printf("Max compute unit:            %i\n", code);
 
 	err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(size_t), &code, NULL);
 	CheckError(err);
@@ -464,24 +464,16 @@ void PrintBuildLog(cl_program *program, cl_device_id device)
 }
 
 //Found kernel function index by name
-int FoundKernelFunctionIndexByName(cl_program *program, char *name)
+int GetKernelFunctionIndex(cl_kernel *kernels, int num, char *name)
 {
-    if(name == NULL)
-        return -1;
-
     cl_int err = 0;
-    cl_uint num_kernels = 0;
+    char func_name[512] = {0};
 
-    err = clCreateKernelsInProgram(*program, 0, NULL, &num_kernels);
-    CheckError(err);
-    std::vector<cl_kernel> kernel_list(num_kernels);
-    err = clCreateKernelsInProgram(*program, num_kernels, &kernel_list[0], NULL);
-
-    for(int i = 0; i < kernel_list.size(); ++i)
+    for(int i = 0; i < num; ++i)
     {
-        char func_name[64] = {0};
-        err = clGetKernelInfo(kernel_list[i], CL_KERNEL_FUNCTION_NAME, 64, func_name, NULL);
+        err = clGetKernelInfo(kernels[i], CL_KERNEL_FUNCTION_NAME, sizeof(func_name), func_name, NULL);
         CheckError(err);
+
         if(strcmp(name, func_name) == 0)
             return i;
     }
