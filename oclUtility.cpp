@@ -447,15 +447,15 @@ void QueryDeviceInfo(cl_device_id device)
 }
 
 //Print build log
-void PrintBuildLog(cl_program *program, cl_device_id device)
+void PrintBuildLog(cl_program &program, cl_device_id device)
 {
     size_t log_size = 0;
     cl_int err = 0;
-    err = clGetProgramBuildInfo(*program, device, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+    err = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
     CheckError(err);
     
     char *log = (char*)malloc(log_size + 1);
-    err = clGetProgramBuildInfo(*program, device, CL_PROGRAM_BUILD_LOG, log_size + 1, log, NULL);
+    err = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, log_size + 1, log, NULL);
     CheckError(err);
     
     fprintf(stderr, "Build log:\n%s\n", log);
