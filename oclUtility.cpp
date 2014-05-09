@@ -444,6 +444,10 @@ void QueryDeviceInfo(cl_device_id device)
 	err = clGetDeviceInfo(device, CL_DEVICE_MAX_WRITE_IMAGE_ARGS, sizeof(size_t), &code, NULL);
 	CheckError(err);
 	printf("Max write image args:        %i\n", code);
+
+    err = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
+    CheckError(err);
+    printf("Extentions:                  %s\n", buffer);
 }
 
 //Print build log
@@ -479,4 +483,22 @@ int GetKernelFunctionIndex(cl_kernel *kernels, int num, char *name)
     }
 
     return -1;
+}
+
+//Build program
+cl_program BuildProgram(cl_context context, cl_device_id device, char* filename)
+{
+    cl_int err = 0;
+    char *source_code = LoadProgramSourceCode(filename);
+    cl_program program = clCreateProgramWithSource(context, 1, (const char **)&source_code, NULL, &err);
+    CheckError(err);
+
+    err = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+    if(!CheckError(err, "Build ERROR", false))
+    {
+        PrintBuildLog(program, device);
+        exit(0);
+    }
+
+    return program;
 }

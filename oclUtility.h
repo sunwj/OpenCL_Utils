@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <string>
 
 #ifdef __APPLE__
 #include <OpenCL/OpenCL.h>
@@ -64,5 +65,8 @@ void PrintBuildLog(cl_program &, cl_device_id);
 
 //Found kernel function index by name
 int GetKernelFunctionIndex(cl_kernel *, int num, char *);
+
+//Build program
+cl_program BuildProgram(cl_context context, cl_device_id, char*);
 
 #endif
