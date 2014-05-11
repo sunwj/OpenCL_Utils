@@ -624,6 +624,7 @@ void ReleaseContext(cl_context &ctx)
 }
 
 //Release device
+/*
 void ReleaseDevice(cl_device_id &device)
 {
     cl_int err = 0;
@@ -632,9 +633,10 @@ void ReleaseDevice(cl_device_id &device)
     err = clGetDeviceInfo(device, CL_DEVICE_REFERENCE_COUNT, sizeof(size_t), &count, NULL);
     CheckError(err);
 
-    //for(size_t i = 0; i < count; ++i)
-        //clReleaseDevice(device);
+    for(size_t i = 0; i < count; ++i)
+        clReleaseDevice(device);
 }
+*/
 
 //Release memory object
 void ReleaseMemObject(cl_mem &memobj)

@@ -88,7 +88,7 @@ void ReleaseCommandQueue(cl_command_queue &cmd);
 void ReleaseContext(cl_context &ctx);
 
 //Release device
-void ReleaseDevice(cl_device_id &device);
+//void ReleaseDevice(cl_device_id &device);
 
 //Release memory object
 void ReleaseMemObject(cl_mem &memobj);
