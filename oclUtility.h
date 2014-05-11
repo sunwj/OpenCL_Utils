@@ -54,6 +54,9 @@ cl_platform_id SelectPlatform(void);
 //Select devices manually
 cl_device_id SelectDevice(cl_platform_id);
 
+//Select devices from all devices availiable
+cl_device_id SelectDevicesAvailiable(cl_platform_id);
+
 //Query device information
 void QueryDeviceInfo(cl_device_id device);
 
@@ -68,5 +71,29 @@ int GetKernelFunctionIndex(cl_kernel *, int num, char *);
 
 //Build program
 cl_program BuildProgram(cl_context context, cl_device_id, char*);
+
+//Create kernels in program
+std::vector<cl_kernel> CreateKernelsInProgram(cl_program &);
+
+//Release kernel
+void ReleaseKernel(cl_kernel &kernel);
+
+//Release program
+void ReleaseProgram(cl_program &program);
+
+//Release command queue
+void ReleaseCommandQueue(cl_command_queue &cmd);
+
+//Release context
+void ReleaseContext(cl_context &ctx);
+
+//Release device
+void ReleaseDevice(cl_device_id &device);
+
+//Release memory object
+void ReleaseMemObject(cl_mem &memobj);
+
+//Release event
+void ReleaseEvent(cl_event &event);
 
 #endif

@@ -313,6 +313,54 @@ cl_device_id SelectDevice(cl_platform_id platform)
     return devices[choice-1];
 }
 
+//Select devices from all devices availiable
+cl_device_id SelectDevicesAvailiable(cl_platform_id platform)
+{
+    cl_int err = 0;
+    cl_uint num_devices = 0;
+    char msg[256] = {0};
+    int choice = 0;
+
+    err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices);
+    CheckError(err, "Failed to get any device!");
+    std::vector<cl_device_id> devices(num_devices);
+    err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, num_devices, &devices[0], &num_devices);
+    CheckError(err, "Failed to get any device!");
+
+    printf("%i devices found!\n", num_devices);
+    for(int i = 0; i < num_devices; ++i)
+    {
+        err = clGetDeviceInfo(devices[i], CL_DEVICE_NAME, sizeof(msg), msg, NULL);
+        CheckError(err, "Failed to get device information!");
+        printf("[%i] %s\n", i+1, msg);
+    }
+
+    if(num_devices == 1)
+    {
+        err = clGetDeviceInfo(devices[0], CL_DEVICE_NAME, sizeof(msg), msg, NULL);
+        CheckError(err, "Failed to get device information!");
+        printf("%s selected!\n", msg);
+
+        return devices[0];
+    }
+
+    printf("Please select a device:");
+    scanf("%i", &choice);
+
+    while (choice<0 || choice>num_devices)
+    {
+        fprintf(stderr, "Invalid choice!\n");
+        printf("Please select a valid device number:");
+        scanf("%i", &choice);
+    }
+
+    err = clGetDeviceInfo(devices[choice-1], CL_DEVICE_NAME, sizeof(msg), msg, NULL);
+    CheckError(err, "Failed to get device information!");
+    printf("%s selected!\n", msg);
+
+    return devices[choice-1];
+}
+
 //Load program source code
 char* LoadProgramSourceCode(char *filename, size_t *source_size)
 {
@@ -445,6 +493,10 @@ void QueryDeviceInfo(cl_device_id device)
 	CheckError(err);
 	printf("Max write image args:        %i\n", code);
 
+    err = clGetDeviceInfo(device, CL_DEVICE_PROFILING_TIMER_RESOLUTION, sizeof(size_t), &code, NULL);
+    CheckError(err);
+    printf("Profiling timer resolution:  %ins\n", code);
+
     err = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
     CheckError(err);
     printf("Extentions:                  %s\n", buffer);
@@ -501,4 +553,111 @@ cl_program BuildProgram(cl_context context, cl_device_id device, char* filename)
     }
 
     return program;
+}
+
+//Create kernels in program
+std::vector<cl_kernel> CreateKernelsInProgram(cl_program &program)
+{
+    cl_int err = 0;
+    cl_uint num_kernels = 0;
+
+    err = clCreateKernelsInProgram(program, 0, NULL, &num_kernels);
+    CheckError(err);
+
+    std::vector<cl_kernel> kernels(num_kernels);
+    err = clCreateKernelsInProgram(program, num_kernels, &kernels[0], NULL);
+    CheckError(err);
+
+    return kernels;
+}
+
+//Release kernel
+void ReleaseKernel(cl_kernel &kernel)
+{
+    cl_int err = 0;
+    size_t count = 0;
+
+    err = clGetKernelInfo(kernel, CL_KERNEL_REFERENCE_COUNT, sizeof(size_t), &count, NULL);
+    CheckError(err);
+
+    for(size_t i = 0; i < count; ++i)
+        clReleaseKernel(kernel);
+}
+
+//Release program
+void ReleaseProgram(cl_program &program)
+{
+    cl_int err = 0;
+    size_t count = 0;
+
+    err = clGetProgramInfo(program, CL_PROGRAM_REFERENCE_COUNT, sizeof(size_t), &count, NULL);
+    CheckError(err);
+
+    for(size_t i = 0; i < count; ++i)
+        clReleaseProgram(program);
+}
+
+//Release command queue
+void ReleaseCommandQueue(cl_command_queue &cmd)
+{
+    cl_int err = 0;
+    size_t count = 0;
+
+    err = clGetCommandQueueInfo(cmd, CL_QUEUE_REFERENCE_COUNT, sizeof(size_t), &count, NULL);
+    CheckError(err);
+
+    for(size_t i = 0; i < count; ++i)
+        clReleaseCommandQueue(cmd);
+}
+
+//Release context
+void ReleaseContext(cl_context &ctx)
+{
+    cl_int err = 0;
+    size_t count = 0;
+
+    err = clGetContextInfo(ctx, CL_CONTEXT_REFERENCE_COUNT, sizeof(size_t), &count, NULL);
+    CheckError(err);
+
+    for(size_t i = 0; i < count; ++i)
+        clReleaseContext(ctx);
+}
+
+//Release device
+void ReleaseDevice(cl_device_id &device)
+{
+    cl_int err = 0;
+    size_t count = 0;
+
+    err = clGetDeviceInfo(device, CL_DEVICE_REFERENCE_COUNT, sizeof(size_t), &count, NULL);
+    CheckError(err);
+
+    //for(size_t i = 0; i < count; ++i)
+        //clReleaseDevice(device);
+}
+
+//Release memory object
+void ReleaseMemObject(cl_mem &memobj)
+{
+    cl_int err = 0;
+    size_t count = 0;
+
+    err = clGetMemObjectInfo(memobj, CL_MEM_REFERENCE_COUNT, sizeof(size_t), &count, NULL);
+    CheckError(err);
+
+    for(size_t i = 0; i < count; ++i)
+        clReleaseMemObject(memobj);
+}
+
+//Release event
+void ReleaseEvent(cl_event &event)
+{
+    cl_int err = 0;
+    size_t count = 0;
+
+    err = clGetEventInfo(event, CL_EVENT_REFERENCE_COUNT, sizeof(size_t), &count, NULL);
+    CheckError(err);
+
+    for(size_t i = 0; i < count; ++i)
+        clReleaseEvent(event);
 }
