@@ -538,14 +538,14 @@ int GetKernelFunctionIndex(cl_kernel *kernels, int num, char *name)
 }
 
 //Build program
-cl_program BuildProgram(cl_context context, cl_device_id device, char* filename)
+cl_program BuildProgram(cl_context context, cl_device_id device, char* filename, char *options)
 {
     cl_int err = 0;
     char *source_code = LoadProgramSourceCode(filename);
     cl_program program = clCreateProgramWithSource(context, 1, (const char **)&source_code, NULL, &err);
     CheckError(err);
 
-    err = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+    err = clBuildProgram(program, 0, NULL, options, NULL, NULL);
     if(!CheckError(err, "Build ERROR", false))
     {
         PrintBuildLog(program, device);

@@ -70,7 +70,7 @@ void PrintBuildLog(cl_program &, cl_device_id);
 int GetKernelFunctionIndex(cl_kernel *, int num, char *);
 
 //Build program
-cl_program BuildProgram(cl_context context, cl_device_id, char*);
+cl_program BuildProgram(cl_context context, cl_device_id, char*, char*);
 
 //Create kernels in program
 std::vector<cl_kernel> CreateKernelsInProgram(cl_program &);
