@@ -440,7 +440,7 @@ void QueryDeviceInfo(cl_device_id device)
 
 	err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(size_t), &code, NULL);
 	CheckError(err);
-	printf("Max work item dimensions:    %i\n", code);
+    printf("Max work item dimensions:    %i\n", code);
 
 	err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(triple), triple, NULL);
 	CheckError(err);
