@@ -39,10 +39,44 @@
 #include <vector>
 #include <string>
 
-#ifdef __APPLE__
+#if defined(_WIN32)
+#include <windows.h>
+#include <CL/cl.h>
+#include <CL/cl_gl.h>
+#elif defined(__APPLE__)
 #include <OpenCL/OpenCL.h>
+#include <OpenCL/cl_gl.h>
 #else
 #include <CL/cl.h>
+#include <CL/cl_gl.h>
+#endif
+
+#if defined(_WIN32)
+cl_context_properties props[] = {
+    CL_GL_CONTEXT_KHR,
+    (cl_context_properties)wglGetCurrentContext(),
+    CL_WGL_HDC_KHR,
+    (cl_context_properties)wglGetCurrentDC(),
+    CL_CONTEXT_PLATFORM,
+    (cl_context_properties)cpPlatform,
+    0
+};
+#elif defined(__APPLE__)
+cl_context_properties props[] = {
+    CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
+    (cl_context_properties)kCGLShareGroup,
+    0
+};
+#else
+cl_context_properties props[] = {
+    CL_GL_CONTEXT_KHR,
+    (cl_context_properties)glXGetCurrentContext(),
+    CL_GLX_DISPLAY_KHR,
+    (cl_context_properties)glXGetCurrentDisplay(),
+    CL_CONTEXT_PLATFORM,
+    (cl_context_properties)cpPlatform,
+    0
+};
 #endif
 
 //CheckError
