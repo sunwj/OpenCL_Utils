@@ -663,3 +663,15 @@ void ReleaseEvent(cl_event &event)
     for(size_t i = 0; i < count; ++i)
         clReleaseEvent(event);
 }
+
+
+double GetEventProfilingTime(const cl_event &event)
+{
+    cl_int err = 0;
+    size_t start, end;
+    err = clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(size_t), &start, NULL);
+    err |= clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(size_t), &end, NULL);
+    CheckError(err);
+
+    return double(end - start) / 10e9;
+}

@@ -75,6 +75,9 @@ cl_program BuildProgram(cl_context context, cl_device_id, char*, char*);
 //Create kernels in program
 std::vector<cl_kernel> CreateKernelsInProgram(cl_program &);
 
+//Get event profiling time in second
+double GetEventProfilingTime(const cl_event &event);
+
 //Release kernel
 void ReleaseKernel(cl_kernel &kernel);
 
