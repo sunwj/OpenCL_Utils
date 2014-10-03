@@ -675,3 +675,12 @@ double GetEventProfilingTime(const cl_event &event)
 
     return double(end - start) / 10e9;
 }
+
+void ComputeGlobalWorkSize(const size_t *localWorkSize, size_t *globalWorkSize, unsigned int dim)
+{
+	for(unsigned int i = 0; i < dim; ++i)
+	{
+		if(globalWorkSize[i] % localWorkSize[i] != 0)
+			globalWorkSize[i] = (globalWorkSize[i] / localWorkSize[i] + 1) * localWorkSize[i];
+	}
+}

@@ -112,6 +112,9 @@ std::vector<cl_kernel> CreateKernelsInProgram(cl_program &);
 //Get event profiling time in second
 double GetEventProfilingTime(const cl_event &event);
 
+//Compute appropriate global work size accroding to local work size
+void ComputeGlobalWorkSize(const size_t *localWorkSize, size_t *globalWorkSize, unsigned int dim);
+
 //Release kernel
 void ReleaseKernel(cl_kernel &kernel);
 
